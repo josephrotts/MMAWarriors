@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, Slides } from 'ionic-angular';
+import { NavController, Slides, ToastController } from 'ionic-angular';
 
 import * as WC from 'woocommerce-api';
 
@@ -15,7 +15,7 @@ export class HomePage {
 
   @ViewChild('productSlides') productSlides: Slides;
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, public toastCtrl: ToastController) {
     this.page = 2;
 
     this.WooCommerce = WC({                           // WC takes json obj as parametar
@@ -24,7 +24,7 @@ export class HomePage {
         consumerSecret: "cs_4517d5811e5ef68521ab3b5426ff48abae3716f4"
     });
 
-    this.loadMoreProducts();
+    this.loadMoreProducts(null);
 
     this.WooCommerce.getAsync("products").then( (data) => {
       this.products = JSON.parse(data.body).products;
@@ -47,9 +47,25 @@ export class HomePage {
     }, 3000)
   }
 
-  loadMoreProducts() {
+  loadMoreProducts(event) {
+    if (event == null) {
+      this.page = 2;
+    } else {
+      this.page ++;
+    } 
+    
     this.WooCommerce.getAsync("products?page=" + this.page).then( (data) => {     // this: "products?page=" + this.page  = will get the products from the second page, which means the next 10 products will be loaded/retrived from woocommerce store.  
-      this.moreProducts = JSON.parse(data.body).products;
+      this.moreProducts = this.moreProducts.concat(JSON.parse(data.body).products);
+      if (event != null) {
+        event.complete();
+      }
+      if (JSON.parse(data.body).products.length < 10) {
+        event.enable(false);
+        this.toastCtrl.create({
+          message: "No more products!",
+          duration: 5000
+        }).present();
+      }
     }, (err) => {
       console.log(err)
     })
