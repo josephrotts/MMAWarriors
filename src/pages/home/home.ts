@@ -10,14 +10,15 @@ import * as WC from 'woocommerce-api';
 export class HomePage {
   WooCommerce: any;
   products: any[];
-  moreProducts: any;
+  moreProducts: any[];
   page: number;  
 
   @ViewChild('productSlides') productSlides: Slides;
 
   constructor(public navCtrl: NavController, public toastCtrl: ToastController) {
     this.page = 2;
-
+    this.moreProducts = [];
+    
     this.WooCommerce = WC({                           // WC takes json obj as parametar
         url: "http://localhost/wordpress/",
         consumerKey: "ck_13a1af926accdeac39e2cd1c2f0dde80de7a569a",
