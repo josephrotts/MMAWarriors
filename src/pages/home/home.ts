@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, Slides, ToastController } from 'ionic-angular';
 
 import * as WC from 'woocommerce-api';
+import { ProductDetailsPage } from '../product-details/product-details';
 
 @Component({
   selector: 'page-home',
@@ -61,7 +62,7 @@ export class HomePage {
         event.complete();
       }
       if (JSON.parse(data.body).products.length < 10) {
-        event.enable(false);
+        if(event) event.enable(false);
         this.toastCtrl.create({
           message: "No more products!",
           duration: 5000
@@ -72,4 +73,8 @@ export class HomePage {
     })
   }
 
+  openProductPage(product) {
+    this.navCtrl.push(ProductDetailsPage, {"product": product})
+  }
+ 
 }
